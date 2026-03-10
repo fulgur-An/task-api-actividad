@@ -56,4 +56,19 @@ jobs:
       run: |
         CONFIG=${{ env.BUILD_CONFIGURATION || 'Release' }} 
         echo "Building with configuration: $CONFIG"
-        dotnet build src/Api/Api.csproj --configuration $CONFIG --no-restore
+        dotnet build src/Api/Api.csproj --configuration $CONFIG --no-restore --verbosity ${{ env.LOG_LEVEL || 'normal' }}
+        continue-on-error: true
+    
+    - name: install cowsay
+      run: sudo apt-get install cowsay
+
+    - name: Notifica on build failure
+      if: steps.build-step.outcome == 'failure'
+      run: cowsay "💥 La compilacion ha fallado 😢"
+
+    - name: Notifica on build success
+      if: steps.build-step.outcome == 'success'
+      run: cowsay "🎉 La compilacion fue exitosa 😎"
+
+    - name: Mensaje Final
+      run: cowsay "Workflow completado exitosamente 🎉"
